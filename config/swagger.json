@@ -1,0 +1,2077 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "Transit API",
+    "description": "Transit API description"
+  },
+  "schemes": [ "http", "https" ],
+  "consumes": [ "application/json" ],
+  "produces": [ "application/json" ],
+  "paths": {
+    "/auth": {
+      "post": {
+        "tags": [ "Authentication" ],
+        "summary": "Authenticates user sessions",
+        "operationId": "api_auth_create",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "credentials",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Credentials" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [ "Authentication" ],
+        "summary": "Signs out of an authenticated session",
+        "operationId": "api_auth_delete",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "allSessions",
+            "description": "true - sign out of all sessions, false: sign out of current session",
+            "in": "query",
+            "default": false,
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [ "User" ],
+        "summary": "Retrieves authenticated user information",
+        "operationId": "api_user_get",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/UserInfo" }
+          }
+        },
+        "deprecated": false
+      },
+      "put": {
+        "tags": [ "User" ],
+        "summary": "Modifies authenticated user information",
+        "operationId": "api_user_set",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "modifyCredentials",
+            "description": "changes authenticated user email and/or password, when new values are provided",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ModifyCredentials" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/ModifyCredentials" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/user/users": {
+      "get": {
+        "tags": [ "User" ],
+        "summary": "Retrieves users associated with the authenticated user",
+        "operationId": "api_user_user_get",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "List of users associated with the authenticated user",
+            "schema": { "$ref": "#/definitions/AgencyUserList" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/user/agencies": {
+      "get": {
+        "tags": [ "User" ],
+        "summary": "Retrieves agencies associated with the authenticated user",
+        "operationId": "api_user_agency_get",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "List of agencies associated with the authenticated user",
+            "schema": { "$ref": "#/definitions/AgencyList" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/user/message": {
+      "post": {
+        "tags": [ "User" ],
+        "summary": "Sends a message from the authenticated user to a specified user",
+        "operationId": "api_user_message",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "userMessage",
+            "description": "Message details",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserMessage" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/agency/message": {
+      "post": {
+        "tags": [ "Agency" ],
+        "summary": "Sends a message to all users associated with an agency",
+        "operationId": "api_agency_message",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "agencyMessage",
+            "description": "Message details",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyMessage" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/agency/upload": {
+      "post": {
+        "tags": [ "Agency" ],
+        "summary": "Set agency GTFS from uploaded file",
+        "operationId": "api_agency_upload",
+        "produces": [ "application/json", "text/json" ],
+        "consumes": [ "multipart/form-data" ],
+        "parameters": [
+          {
+            "description": "GTFS zip file",
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true
+          },
+          {
+            "description": "Agency id",
+            "name": "id",
+            "in": "formData",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/agency/fetch": {
+      "post": {
+        "tags": [ "Agency" ],
+        "summary": "Set agency GTFS from file at given url",
+        "operationId": "api_agency_fetch",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "agencyFetch",
+            "description": "Agency fetch information",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyFetch" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/agency/publish": {
+      "post": {
+        "tags": [ "Agency" ],
+        "summary": "Publishes the working set GTFS of an agency",
+        "operationId": "api_agency_publish",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "agencyId",
+            "description": "Agency publish information",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyIdObject" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/agencies": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve sub-agencies of a given agency id or prefix",
+        "operationId": "api_design_agencies_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "agenciesQuery",
+            "description": "Either id or prefix are required, subAgencyIdsInAgency are ignored when subAgencyIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/AgenciesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/agencies": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve sub-agencies of a given agency id or prefix",
+        "operationId": "api_transit_agencies_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "agenciesTransitQuery",
+            "description": "Either id or prefix are required, subAgencyIdsInAgency are ignored when subAgencyIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/AgenciesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/calendar": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve calendar data of a given agency id or prefix",
+        "operationId": "api_design_calendar_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/calendar": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve calendar data of a given agency id or prefix",
+        "operationId": "api_transit_calendar_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesTransitQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/calendar_dates": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve calendar dates of a given agency id or prefix",
+        "operationId": "api_design_calendar_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/calendar_dates": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve calendar dates of a given agency id or prefix",
+        "operationId": "api_transit_calendar_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesTransitQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/services": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve services of a given agency id or prefix",
+        "operationId": "api_design_services_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/services": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve services of a given agency id or prefix",
+        "operationId": "api_transit_services_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "servicesTransitQuery",
+            "description": "Either id or prefix are required, serviceIdsInAgency are ignored when serviceIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ServicesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/stops": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve stops of a given agency id or prefix",
+        "operationId": "api_design_stops_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "stopsQuery",
+            "description": "Either id or prefix are required, stopIdsInAgency are ignored when stopIds are given; retrieves stops within radiusInMeters of [centerLon, centerLat] and  coordinates, when given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/StopsQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/stops": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve stops of a given agency id or prefix",
+        "operationId": "api_transit_stops_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "stopsTransitQuery",
+            "description": "Either id or prefix are required, stopIdsInAgency are ignored when stopIds are given; retrieves stops within radiusInMeters of [centerLon, centerLat] and  coordinates, when given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/StopsTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/shapes": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve shapes of a given agency id or prefix",
+        "operationId": "api_design_shapes_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "shapesQuery",
+            "description": "Either id or prefix are required, shapeIdsInAgency are ignored when shapeIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ShapesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/shapes": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve shapes of a given agency id or prefix",
+        "operationId": "api_transit_shapes_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "shapesTransitQuery",
+            "description": "Either id or prefix are required, shapeIdsInAgency are ignored when shapeIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/ShapesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/routes": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve routes of a given sub agency by agency id or prefix",
+        "operationId": "api_design_routes_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "routesQuery",
+            "description": "Either id or prefix are required, routeIdsInAgency are ignored when routeIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/RoutesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/routes": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve routes of a given sub agency by agency id or prefix",
+        "operationId": "api_transit_routes_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "routesTransitQuery",
+            "description": "Either id or prefix are required, routeIdsInAgency are ignored when routeIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/RoutesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/stop_sequences": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve stop sequences of a given route and/or stop  by agency id or prefix",
+        "operationId": "api_design_stop sequences_get",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "stopSequencesQuery",
+            "description": "Either id or prefix are required",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/StopSequencesQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/stop_sequences": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve stop sequences of a given route and/or stop  by agency id or prefix",
+        "operationId": "api_transit_stop sequences_get",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "stopSequencesTransitQuery",
+            "description": "Either id or prefix are required",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/StopSequencesTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/design/trips": {
+      "post": {
+        "tags": [ "Design" ],
+        "summary": "Retrieve trips of a given route by agency id or prefix",
+        "operationId": "api_design_trips_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "tripsQuery",
+            "description": "Either id or prefix are required, tripIdsInAgency are ignored when tripIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/TripsQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/transit/trips": {
+      "post": {
+        "tags": [ "Transit" ],
+        "summary": "Retrieve trips of a given route by agency id or prefix",
+        "operationId": "api_transit_trips_post",
+        "produces": [ "application/json", "text/json" ],
+        "parameters": [
+          {
+            "name": "tripsTransitQuery",
+            "description": "Either id or prefix are required, tripIdsInAgency are ignored when tripIds are given",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/TripsTransitQuery" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/admin/user": {
+      "post": {
+        "tags": [ "Administer User" ],
+        "summary": "Creates a new user",
+        "operationId": "api_create_user",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "description": "Creates a new user with the specified credentials",
+        "parameters": [
+          {
+            "name": "createCredentials",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CreateCredentials" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "put": {
+        "tags": [ "Administer User" ],
+        "summary": "Modifies a user",
+        "operationId": "api_modify_user",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "modifyUser",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ModifyUser" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "get": {
+        "tags": [ "Administer User" ],
+        "summary": "Lists all users",
+        "operationId": "api_list_users",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/AgencyUserList" }
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [ "Administer User" ],
+        "summary": "Deletes a user",
+        "operationId": "api_delete_user",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "user identification",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserIdObject" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/admin/agency": {
+      "post": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Creates a new agency",
+        "operationId": "api_create_agency",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "createAgencyInfo",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CreateAgencyInfo" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "put": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Modifies an agency",
+        "operationId": "api_modify_agency",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "modifyAgencyInfo",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ModifyAgencyInfo" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "get": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Lists all agencies",
+        "operationId": "api_list_agencies",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "List of agencies",
+            "schema": { "$ref": "#/definitions/AgencyList" }
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Deletes an agency",
+        "operationId": "api_delete_agency",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "agencyId",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyIdObject" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/admin/agency/user": {
+      "post": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Associates a user with an agency",
+        "operationId": "api_agency_user_post",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "agencyUser",
+            "description": "Authorizes the specified user to access the specified agency",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyUser" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [ "Administer Agency" ],
+        "summary": "Dissociates a user from an agency",
+        "operationId": "api_disconnect_sessions",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "agencyUser",
+            "description": "Disauthorizes the specified user from accessing the specified agency",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AgencyUser" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/admin/session": {
+      "get": {
+        "tags": [ "Administer Session" ],
+        "summary": "Lists all user sessions",
+        "operationId": "api_list_sessions",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "responses": {
+          "200": {
+            "description": "A list of sessions",
+            "schema": { "$ref": "#/definitions/SessionList" }
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": [ "Administer Session" ],
+        "summary": "Disconnects user sessions",
+        "operationId": "api_disconnect_sessions",
+        "produces": [ "application/json", "text/json", "text/html" ],
+        "parameters": [
+          {
+            "name": "sessionDeleteInfo",
+            "description": "when userId is specified disconnects all sessions associated with it; otherwise disconnects the session associated with sessionId",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/SessionDeleteInfo" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result status",
+            "schema": { "$ref": "#/definitions/Status" }
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "Email": {
+      "type": "string",
+      "description": "A valid email address",
+      "example": "foo@bar.com"
+    },
+    "NewEmail": {
+      "type": "string",
+      "description": "A valid email address",
+      "example": "foo2@bar.com"
+    },
+    "Password": {
+      "type": "string",
+      "description": "A password must contain upper and lower case letters at at least one symbol or digit",
+      "example": "1Foo@Bar"
+    },
+    "IsAdmin": {
+      "type": "boolean",
+      "description": "Administrator status",
+      "example": "false"
+    },
+    "OK": {
+      "type": "boolean",
+      "description": "Boolean success/fail status of the operation",
+      "example": "true"
+    },
+    "Message": {
+      "type": "string",
+      "description": "Textual result of the operation",
+      "example": "operation succeeded"
+    },
+    "SessionId": {
+      "type": "string",
+      "description": "Session identifier",
+      "example": "XXXXXXXXXXXXXXXXXXXXX"
+    },
+    "UserId": {
+      "type": "number",
+      "description": "User identifier",
+      "example": 1
+    },
+    "URL": {
+      "type": "string",
+      "description": "A valid URL",
+      "example": "http://foo.bar"
+    },
+    "AgencyPrefix": {
+      "type": "string",
+      "description": "Agency prefix",
+      "example": "MDT"
+    },
+    "AgencyId": {
+      "type": "number",
+      "description": "Agency identifier",
+      "example": 1
+    },
+    "AgencyIdList": {
+      "type": "array",
+      "description": "A list of agency ids",
+      "items": { "$ref": "#/definitions/AgencyId" }
+    },
+    "AgencyIdInAgency": {
+      "type": "string",
+      "description": "Agency identifier in agency",
+      "example": "001"
+    },
+    "AgencyIdInAgencyList": {
+      "type": "array",
+      "description": "A list of agency ids used by the agency",
+      "items": { "$ref": "#/definitions/AgencyIdInAgency" }
+    },
+    "SubAgencyId": {
+      "type": "number",
+      "description": "Sub-agency identifier",
+      "example": 1
+    },
+    "SubAgencyIdList": {
+      "type": "array",
+      "description": "A list of sub agency ids",
+      "items": { "$ref": "#/definitions/SubAgencyId" }
+    },
+    "SubAgencyIdInAgency": {
+      "type": "string",
+      "description": "Sub-agency identifier in agency",
+      "example": "001"
+    },
+    "SubAgencyIdInAgencyList": {
+      "type": "array",
+      "description": "A list of sub agency ids used by the agency",
+      "items": { "$ref": "#/definitions/SubAgencyIdInAgency" }
+    },
+    "ServiceId": {
+      "type": "number",
+      "description": "Service identifier",
+      "example": 1
+    },
+    "ServiceIdList": {
+      "type": "array",
+      "description": "A list of service ids",
+      "items": { "$ref": "#/definitions/ServiceId" }
+    },
+    "ServiceIdInAgency": {
+      "type": "string",
+      "description": "Service identifier in Agency",
+      "example": "001"
+    },
+    "ServiceIdInAgencyList": {
+      "type": "array",
+      "description": "A list of service ids used by the agency",
+      "items": { "$ref": "#/definitions/ServiceIdInAgency" }
+    },
+    "StopId": {
+      "type": "number",
+      "description": "Stop identifier",
+      "example": 1
+    },
+    "StopIdList": {
+      "type": "array",
+      "description": "A list of stop ids",
+      "items": { "$ref": "#/definitions/StopId" }
+    },
+    "StopIdInAgency": {
+      "type": "string",
+      "description": "Stop identifier in Agency",
+      "example": "001"
+    },
+    "StopIdInAgencyList": {
+      "type": "array",
+      "description": "A list of stop ids used by the agency",
+      "items": { "$ref": "#/definitions/StopIdInAgency" }
+    },
+    "ShapeId": {
+      "type": "number",
+      "description": "Shape identifier",
+      "example": 1
+    },
+    "ShapeIdList": {
+      "type": "array",
+      "description": "A list of Shape ids",
+      "items": { "$ref": "#/definitions/ShapeId" }
+    },
+    "ShapeIdInAgency": {
+      "type": "string",
+      "description": "Shape identifier in Agency",
+      "example": "001"
+    },
+    "ShapeIdInAgencyList": {
+      "type": "array",
+      "description": "A list of Shape ids used by the agency",
+      "items": { "$ref": "#/definitions/ShapeIdInAgency" }
+    },
+    "RouteId": {
+      "type": "number",
+      "description": "Route identifier",
+      "example": 1
+    },
+    "RouteIdList": {
+      "type": "array",
+      "description": "A list of Route ids",
+      "items": { "$ref": "#/definitions/RouteId" }
+    },
+    "RouteIdInAgency": {
+      "type": "string",
+      "description": "Route identifier in Agency",
+      "example": "001"
+    },
+    "RouteIdInAgencyList": {
+      "type": "array",
+      "description": "A list of Route ids used by the agency",
+      "items": { "$ref": "#/definitions/RouteIdInAgency" }
+    },
+    "TripId": {
+      "type": "number",
+      "description": "Trip identifier",
+      "example": 1
+    },
+    "TripIdList": {
+      "type": "array",
+      "description": "A list of Trip ids",
+      "items": { "$ref": "#/definitions/TripId" }
+    },
+    "TripIdInAgency": {
+      "type": "string",
+      "description": "Trip identifier in Agency",
+      "example": "001"
+    },
+    "TripIdInAgencyList": {
+      "type": "array",
+      "description": "A list of Trip ids used by the agency",
+      "items": { "$ref": "#/definitions/TripIdInAgency" }
+    },
+    "StopSequenceId": {
+      "type": "number",
+      "description": "Stop sequence identifier",
+      "example": 1
+    },
+    "StopSequenceIdList": {
+      "type": "array",
+      "description": "A list of Stop Sequence ids",
+      "items": { "$ref": "#/definitions/StopSequenceId" }
+    },
+    "NewAgencyPrefix": {
+      "type": "string",
+      "description": "New agency prefix",
+      "example": "UTMA"
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "$ref": "#/definitions/OK"
+        },
+        "message": {
+          "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "Credentials": {
+      "type": "object",
+      "required": [ "email", "password" ],
+      "properties": {
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "password": {
+          "$ref": "#/definitions/Password"
+        }
+      }
+    },
+    "ModifyCredentials": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "password": {
+          "$ref": "#/definitions/Password"
+        }
+      }
+    },
+    "CreateCredentials": {
+      "type": "object",
+      "required": [ "email", "password", "isAdmin" ],
+      "properties": {
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "password": {
+          "$ref": "#/definitions/Password"
+        },
+        "isAdmin": {
+          "$ref": "#/definitions/IsAdmin",
+          "default": false
+        }
+      }
+    },
+    "ModifyUser": {
+      "type": "object",
+      "required": [ "id" ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UserId"
+        },
+        "email": {
+          "$ref": "#/definitions/NewEmail"
+        },
+        "password": {
+          "$ref": "#/definitions/Password"
+        },
+        "isAdmin": {
+          "$ref": "#/definitions/IsAdmin",
+          "default": false
+        }
+      }
+    },
+    "SessionInfo": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/definitions/SessionId"
+        },
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "isAdmin": {
+          "$ref": "#/definitions/IsAdmin"
+        }
+      }
+    },
+    "SessionList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/SessionInfo" }
+    },
+    "SessionDeleteInfo": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/definitions/SessionId"
+        },
+        "userId": {
+          "$ref": "#/definitions/UserId"
+        }
+      }
+    },
+    "UserInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UserId"
+        },
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "isAdmin": {
+          "$ref": "#/definitions/IsAdmin"
+        }
+      }
+    },
+    "UserList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/UserInfo" }
+    },
+    "UserIdObject": {
+      "type": "object",
+      "required": [ "id" ],
+      "properties": {
+        "id": { "$ref": "#/definitions/UserId" }
+      }
+    },
+    "AgencyIdObject": {
+      "type": "object",
+      "required": [ "id" ],
+      "properties": {
+        "id": { "$ref": "#/definitions/AgencyId" }
+      }
+    },
+    "AgencyUpload": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        }
+      }
+    },
+    "UserMessage": {
+      "type": "object",
+      "required": [ "id", "message" ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UserId"
+        },
+        "message": {
+          "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "AgencyMessage": {
+      "type": "object",
+      "required": [ "id", "message" ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "message": {
+          "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "AgencyFetch": {
+      "type": "object",
+      "required": [ "id", "url" ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "url": {
+          "$ref": "#/definitions/URL"
+        }
+      }
+    },
+    "AgencyInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        }
+      }
+    },
+    "AgencyList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AgencyInfo" }
+    },
+    "CreateAgencyInfo": {
+      "type": "object",
+      "required": [ "prefix" ],
+      "properties": {
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        }
+      }
+    },
+    "AgencyUserInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/UserId"
+        },
+        "email": {
+          "$ref": "#/definitions/Email"
+        },
+        "isAdmin": {
+          "$ref": "#/definitions/IsAdmin"
+        },
+        "agencies": {
+          "$ref": "#/definitions/AgencyList"
+        }
+      }
+    },
+    "AgencyUserList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AgencyUserInfo" }
+    },
+    "AgencyUser": {
+      "type": "object",
+      "required": [ "agencyId", "userId" ],
+      "properties": {
+        "agencyId": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "userId": {
+          "$ref": "#/definitions/UserId"
+        }
+      }
+    },
+    "ModifyAgencyInfo": {
+      "type": "object",
+      "required": [ "id", "prefix" ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/NewAgencyPrefix"
+        }
+      }
+    },
+    "AgenciesQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "subAgencyIds": {
+          "$ref": "#/definitions/SubAgencyIdList"
+        },
+        "subAgencyIdsInAgency": {
+          "$ref": "#/definitions/SubAgencyIdInAgencyList"
+        }
+      }
+    },
+    "AgenciesTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "subAgencyIds": {
+          "$ref": "#/definitions/SubAgencyIdList"
+        },
+        "subAgencyIdsInAgency": {
+          "$ref": "#/definitions/SubAgencyIdInAgencyList"
+        }
+      }
+    },
+    "OnDate": {
+      "type": "string",
+      "pattern": "(\\d{8})",
+      "description": "A date in YYYYMMDD format to optionally filter results by availability on the given date",
+      "example": "20170904"
+    },
+    "WeekDayMask": {
+      "type": "integer",
+      "description": "A 7-bit mask representing one of more days of the week, bits [0 to 6] correspond to [Monday to Sunday]: 1 (Monday), 2 (Tuesday), 4 (Wednesday), [...] 32 (Saturday), 64 (Sunday)",
+      "example": 1
+    },
+    "ServicesQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "serviceIds": {
+          "$ref": "#/definitions/ServiceIdList"
+        },
+        "serviceIdsInAgency": {
+          "$ref": "#/definitions/ServiceIdInAgencyList"
+        },
+        "onDate": {
+          "$ref": "#/definitions/OnDate"
+        }
+      }
+    },
+    "ServicesTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "serviceIds": {
+          "$ref": "#/definitions/ServiceIdList"
+        },
+        "serviceIdsInAgency": {
+          "$ref": "#/definitions/ServiceIdInAgencyList"
+        },
+        "onDate": {
+          "$ref": "#/definitions/OnDate"
+        }
+      }
+    },
+    "Longitude": {
+      "type": "number",
+      "description": "Longitude (X) coordinate (between -180 and 180 degrees)",
+      "example": -80.37388
+    },
+    "Latitude": {
+      "type": "number",
+      "description": "Latitude (Y) coordinate (between -90 and 90 degrees)",
+      "example": 25.75869
+    },
+    "DistanceInMeters": {
+      "type": "number",
+      "description": "A distance measured in meters",
+      "example": 200
+    },
+    "RadiusInMeters": {
+      "type": "number",
+      "description": "A distance radius measured in meters",
+      "example": 200
+    },
+    "StopsQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "stopIds": {
+          "$ref": "#/definitions/StopIdList"
+        },
+        "stopIdsInAgency": {
+          "$ref": "#/definitions/StopIdInAgencyList"
+        },
+        "stopSequenceId": {
+          "$ref": "#/definitions/StopSequenceId"
+        },
+        "centerLon": {
+          "$ref": "#/definitions/Longitude"
+        },
+        "centerLat": {
+          "$ref": "#/definitions/Latitude"
+        },
+        "radiusInMeters": {
+          "$ref": "#/definitions/RadiusInMeters"
+        }
+      }
+    },
+    "StopsTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "stopIds": {
+          "$ref": "#/definitions/StopIdList"
+        },
+        "stopIdsInAgency": {
+          "$ref": "#/definitions/StopIdInAgencyList"
+        },
+        "stopSequenceId": {
+          "$ref": "#/definitions/StopSequenceId"
+        },
+        "centerLon": {
+          "$ref": "#/definitions/Longitude"
+        },
+        "centerLat": {
+          "$ref": "#/definitions/Latitude"
+        },
+        "radiusInMeters": {
+          "$ref": "#/definitions/RadiusInMeters"
+        }
+      }
+    },
+    "IncludeOriginal": {
+      "type": "boolean",
+      "description": "If true, includes original (not simplified) coordinates and distances",
+      "default": false,
+      "example": false
+    },
+    "ExcludeSimplified": {
+      "type": "boolean",
+      "description": "If true, excludes simplified coordinates and distances",
+      "default": false,
+      "example": false
+    },
+    "DecodeData": {
+      "type": "boolean",
+      "description": "If true, decodes distances, ids, coordinates, and other types of data",
+      "default": false,
+      "example": false
+    },
+    "ReturnGeoJSON": {
+      "type": "boolean",
+      "description": "If true, returns linestrings and multilinestrings in GeoJSON format",
+      "default": false,
+      "example": false
+    },
+    "RouteDirectionId": {
+      "type": "integer",
+      "description": "Direction id can always be 0 and can be 1 for routes with 2 directions, ignored if routeId is not given",
+      "example": 1
+    },
+    "RouteType": {
+      "type": "integer",
+      "description": "0-Tram | 1-Subway or Metro | 2-Rail | 3-Bus | 4-Ferry | 5-Cable car | 6-Gondola, Suspended cable car | 7-Funicular",
+      "example": 3
+    },
+    "RouteTypeList": {
+      "description": "All route types included when list is not given",
+      "type": "array",
+      "items": { "$ref": "#/definitions/RouteType" }
+    },
+    "ShapesQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "shapeIds": {
+          "$ref": "#/definitions/ShapeIdList"
+        },
+        "shapeIdsInAgency": {
+          "$ref": "#/definitions/ShapeIdInAgencyList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "includeOriginal": {
+          "$ref": "#/definitions/IncludeOriginal"
+        },
+        "excludeSimplified": {
+          "$ref": "#/definitions/ExcludeSimplified"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "ShapesTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "shapeIds": {
+          "$ref": "#/definitions/ShapeIdList"
+        },
+        "shapeIdsInAgency": {
+          "$ref": "#/definitions/ShapeIdInAgencyList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "includeOriginal": {
+          "$ref": "#/definitions/IncludeOriginal"
+        },
+        "excludeSimplified": {
+          "$ref": "#/definitions/ExcludeSimplified"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "IncludeDirections": {
+      "type": "boolean",
+      "description": "If true, includes direction information for each route",
+      "default": false,
+      "example": false
+    },
+    "IncludeDirectionShape": {
+      "type": "boolean",
+      "description": "If true, includes direction shape information for direction of each route, ignored if includeDirections is false",
+      "default": false,
+      "example": false
+    },
+    "IncludeRouteShape": {
+      "type": "boolean",
+      "description": "If true, includes the combined route shape of all trips for each route",
+      "default": false,
+      "example": false
+    },
+    "IncludeServiceIds": {
+      "type": "boolean",
+      "description": "If true, includes the service ids available for each route",
+      "default": false,
+      "example": false
+    },
+    "IncludeStopSequenceIds": {
+      "type": "boolean",
+      "description": "If true, includes the stop sequence ids available for each route",
+      "default": false,
+      "example": false
+    },
+    "RoutesQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "subAgencyIds": {
+          "$ref": "#/definitions/SubAgencyIdList"
+        },
+        "subAgencyIdsInAgency": {
+          "$ref": "#/definitions/SubAgencyIdInAgencyList"
+        },
+        "routeIds": {
+          "$ref": "#/definitions/RouteIdList"
+        },
+        "routeIdsInAgency": {
+          "$ref": "#/definitions/RouteIdInAgencyList"
+        },
+        "includeDirections": {
+          "$ref": "#/definitions/IncludeDirections"
+        },
+        "includeDirectionShape": {
+          "$ref": "#/definitions/IncludeDirectionShape"
+        },
+        "includeRouteShape": {
+          "$ref": "#/definitions/IncludeRouteShape"
+        },
+        "includeServiceIds": {
+          "$ref": "#/definitions/IncludeServiceIds"
+        },
+        "includeStopSequenceIds": {
+          "$ref": "#/definitions/IncludeStopSequenceIds"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "RoutesTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "subAgencyIds": {
+          "$ref": "#/definitions/SubAgencyIdList"
+        },
+        "subAgencyIdsInAgency": {
+          "$ref": "#/definitions/SubAgencyIdInAgencyList"
+        },
+        "routeIds": {
+          "$ref": "#/definitions/RouteIdList"
+        },
+        "routeIdsInAgency": {
+          "$ref": "#/definitions/RouteIdInAgencyList"
+        },
+        "includeDirections": {
+          "$ref": "#/definitions/IncludeDirections"
+        },
+        "includeDirectionShape": {
+          "$ref": "#/definitions/IncludeDirectionShape"
+        },
+        "includeRouteShape": {
+          "$ref": "#/definitions/IncludeRouteShape"
+        },
+        "includeServiceIds": {
+          "$ref": "#/definitions/IncludeServiceIds"
+        },
+        "includeStopSequenceIds": {
+          "$ref": "#/definitions/IncludeStopSequenceIds"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "IncludeStopSequences": {
+      "type": "boolean",
+      "description": "If true, includes associated stop sequences",
+      "default": false,
+      "example": false
+    },
+    "IncludeStopDistances": {
+      "type": "boolean",
+      "description": "If true, includes associated stop distances",
+      "default": false,
+      "example": false
+    },
+    "IncludeStopTimes": {
+      "type": "boolean",
+      "description": "If true, includes associated stop times",
+      "default": false,
+      "example": false
+    },
+    "IncludeStops": {
+      "type": "boolean",
+      "description": "If true, includes associated stops",
+      "default": false,
+      "example": false
+    },
+    "IncludeShapes": {
+      "type": "boolean",
+      "description": "If true, includes associated shapes",
+      "default": false,
+      "example": false
+    },
+    "IncludeRoutes": {
+      "type": "boolean",
+      "description": "If true, includes associated routes",
+      "default": false,
+      "example": false
+    },
+    "HMSValue": {
+      "type": "integer",
+      "description": "Hours, minutes, and seconds expressed in seconds: (seconds+60*(minutes+60*hours)",
+      "example": 3600
+    },
+    "TripsQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "tripIds": {
+          "$ref": "#/definitions/TripIdList"
+        },
+        "tripIdsInAgency": {
+          "$ref": "#/definitions/TripIdInAgencyList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeTypeList": {
+          "$ref": "#/definitions/RouteTypeList"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "serviceIds": {
+          "$ref": "#/definitions/ServiceIdList"
+        },
+        "serviceIdsInAgency": {
+          "$ref": "#/definitions/ServiceIdInAgencyList"
+        },
+        "stopSequenceId": {
+          "$ref": "#/definitions/StopSequenceId"
+        },
+        "stopIds": {
+          "$ref": "#/definitions/StopIdList"
+        },
+        "stopIdsInAgency": {
+          "$ref": "#/definitions/StopIdInAgencyList"
+        },
+        "onDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "minStartHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "maxStartHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "minEndHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "maxEndHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "includeStopSequences": {
+          "$ref": "#/definitions/IncludeStopSequences"
+        },
+        "includeStopTimes": {
+          "$ref": "#/definitions/IncludeStopTimes"
+        },
+        "includeStopDistances": {
+          "$ref": "#/definitions/IncludeStopDistances"
+        },
+        "includeStops": {
+          "$ref": "#/definitions/IncludeStops"
+        },
+        "includeRoutes": {
+          "$ref": "#/definitions/IncludeRoutes"
+        },
+        "includeShapes": {
+          "$ref": "#/definitions/IncludeShapes"
+        },
+        "includeOriginal": {
+          "$ref": "#/definitions/IncludeOriginal"
+        },
+        "excludeSimplified": {
+          "$ref": "#/definitions/ExcludeSimplified"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "TripsTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "tripIds": {
+          "$ref": "#/definitions/TripIdList"
+        },
+        "tripIdsInAgency": {
+          "$ref": "#/definitions/TripIdInAgencyList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeTypeList": {
+          "$ref": "#/definitions/RouteTypeList"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "serviceIds": {
+          "$ref": "#/definitions/ServiceIdList"
+        },
+        "serviceIdsInAgency": {
+          "$ref": "#/definitions/ServiceIdInAgencyList"
+        },
+        "stopSequenceId": {
+          "$ref": "#/definitions/StopSequenceId"
+        },
+        "stopIds": {
+          "$ref": "#/definitions/StopIdList"
+        },
+        "stopIdsInAgency": {
+          "$ref": "#/definitions/StopIdInAgencyList"
+        },
+        "onDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "minStartHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "maxStartHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "minEndHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "maxEndHMS": {
+          "$ref": "#/definitions/HMSValue"
+        },
+        "includeStopSequences": {
+          "$ref": "#/definitions/IncludeStopSequences"
+        },
+        "includeStopTimes": {
+          "$ref": "#/definitions/IncludeStopTimes"
+        },
+        "includeStopDistances": {
+          "$ref": "#/definitions/IncludeStopDistances"
+        },
+        "includeStops": {
+          "$ref": "#/definitions/IncludeStops"
+        },
+        "includeRoutes": {
+          "$ref": "#/definitions/IncludeRoutes"
+        },
+        "includeShapes": {
+          "$ref": "#/definitions/IncludeShapes"
+        },
+        "includeOriginal": {
+          "$ref": "#/definitions/IncludeOriginal"
+        },
+        "excludeSimplified": {
+          "$ref": "#/definitions/ExcludeSimplified"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        },
+        "returnGeoJSON": {
+          "$ref": "#/definitions/ReturnGeoJSON"
+        }
+      }
+    },
+    "StopSequencesQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "stopSequenceIds": {
+          "$ref": "#/definitions/StopSequenceIdList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "stopId": {
+          "$ref": "#/definitions/StopId"
+        },
+        "stopIdInAgency": {
+          "$ref": "#/definitions/StopIdInAgency"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        }
+      }
+    },
+    "StopSequencesTransitQuery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/AgencyId"
+        },
+        "prefix": {
+          "$ref": "#/definitions/AgencyPrefix"
+        },
+        "onTransitDate": {
+          "$ref": "#/definitions/OnDate"
+        },
+        "stopSequenceIds": {
+          "$ref": "#/definitions/StopSequenceIdList"
+        },
+        "routeId": {
+          "$ref": "#/definitions/RouteId"
+        },
+        "routeIdInAgency": {
+          "$ref": "#/definitions/RouteIdInAgency"
+        },
+        "routeDirectionId": {
+          "$ref": "#/definitions/RouteDirectionId"
+        },
+        "stopId": {
+          "$ref": "#/definitions/StopId"
+        },
+        "stopIdInAgency": {
+          "$ref": "#/definitions/StopIdInAgency"
+        },
+        "decodeData": {
+          "$ref": "#/definitions/DecodeData"
+        }
+      }
+    }
+  }
+}

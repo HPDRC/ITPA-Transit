@@ -1,0 +1,49 @@
+{
+  "name": "transit-api",
+  "description": "",
+  "version": "1.0.0",
+  "author": "Leonard Bay",
+  "contributors": [],
+  "dependencies": {
+    "bcrypt": "1.0.2",
+    "bluebird": "3.5.0",
+    "body-parser": "1.17.2",
+    "cors": "2.8.4",
+    "csv": "1.1.1",
+    "express": "4.15.3",
+    "express-fileupload": "0.1.4",
+    "express-mysql-session": "1.2.1",
+    "express-session": "1.15.4",
+    "express-socket.io-session": "1.3.2",
+    "extract-zip": "1.6.5",
+    "fs-extra": "^4.0.1",
+    "moment": "2.18.1",
+    "multer": "1.3.0",
+    "node-fetch": "1.7.1",
+    "promise-mysql": "3.0.2",
+    "socket.io": "2.0.3",
+    "swagger-ui": "^2.2.10",
+    "swaggerize-express": "4.0.5",
+    "swaggerize-ui": "1.0.1",
+    "swagmock": "1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "4.3.0",
+    "istanbul": "0.4.5",
+    "is-my-json-valid": "2.16.0",
+    "js-yaml": "3.9.0",
+    "supertest": "3.0.0",
+    "swagger-parser": "3.4.1",
+    "tape": "4.7.0"
+  },
+  "scripts": {
+    "test": "tape 'tests/**/*.js'",
+    "cover": "istanbul cover tape -- 'tests/**/*.js'",
+    "lint": "eslint .",
+    "regenerate": "yo swaggerize:test --framework express --apiPath './config/swagger.json'"
+  },
+  "generator-swaggerize": {
+    "version": "3.1.0"
+  },
+  "main": "./server"
+}
